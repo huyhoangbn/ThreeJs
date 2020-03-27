@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { 
+				width: 100%;
+				height:100%;
+			}
+		</style>
+  </head>
+  <body>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/109/three.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.js"></script>
+		<script src="F:\Chuyên đề CN\three.js-r92\src\cameras\OrthographicCamera.js"></script>
+		<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+		<script src="https://threejs.org/examples/js/renderers/CSS2DRenderer.js"></script>
+		<script src="F:\Chuyên đề CN\assignment\threex.domevents.js"></script>
+		
+		<script>
+			// Our Javascript will go here.
+			var fakeCamera;
+			var angle = 0;
+			var scene = new THREE.Scene();
+			
+			var camera = new THREE.PerspectiveCamera(75,window.innerWidth / window.innerHeight,0.1,1000);
+
+			var solarPlane = createSolarPlane();
+			
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+			
+			labelRenderer = new THREE.CSS2DRenderer();
+			labelRenderer.setSize(window.innerWidth, window.innerHeight);
+			labelRenderer.domElement.style.position = 'absolute';
+			labelRenderer.domElement.style.top = '0';
+			labelRenderer.domElement.style.pointerEvents = 'none';
+			document.body.appendChild(labelRenderer.domElement);
+			/**
+			fakeCamera = camera.clone();
+			controls = new THREE.OrbitControls(fakeCamera, renderer.domElement);
+			controls.enablePan = false;
+			controls.enableDamping = false;*/
+
+			var geometry = new THREE.SphereGeometry(10,10,10);
+			var material = new THREE.MeshNormalMaterial( { wireframe: true } );
+			var sphere = new THREE.Mesh( geometry, material );
+			scene.add( sphere );
+			
+			var geometry2 = new THREE.SphereGeometry(10,10,10);
+			var material2 = new THREE.MeshNormalMaterial( { wireframe: true } );
+			var sphere2 = new THREE.Mesh( geometry2, material2 );
+			sphere2.position.x = 40;
+			scene.add( sphere2 );
+			
+			var geometry3 = new THREE.SphereGeometry(10,10,10);
+			var material3 = new THREE.MeshNormalMaterial( { wireframe: true } );
+			var sphere3 = new THREE.Mesh( geometry3, material3 );
+			sphere3.position.x = -40;
+			scene.add( sphere3 );
+
+			scene.add(solarPlane);
+
+			camera.position.z = 70;
+			
+			const domEvents = new THREEx.DomEvents(camera,renderer.domElement);
+			/**
+			let sphereClicked = false;
+			domEvents.addEventListener( sphere,'click',event =>
+			{
+				if(!sphereClicked){
+					material.wireframe = false;
+					sphereClicked = true;
+				}
+				else{
+					material.wireframe = true;
+					sphereClicked = false;
+				}
+			})*/
+			/**	
+			domEvents.addEventListener(sphere2,'mouseover',event =>{
+				sphere2.scale.set(5,5,5)
+			})
+			domEvents.addEventListener(sphere2,'mouseout',event =>{
+				sphere2.scale.set(1,1,1)
+			})
+
+			domEvents.addEventListener(sphere3,'click',event =>{
+				camera.position.set(sphere3.position.x,sphere3.position.y,20)
+			})
+			domEvents.addEventListener(sphere2,'click',event =>{
+				camera.position.set(sphere2.position.x,sphere2.position.y,100)
+			})*/
+			let sphereClicked = false, sphereClicked2 = false;
+			domEvents.addEventListener(sphere,'click',event =>{
+				sphere.add(makeTextLabel("sphere"));
+				camera.position.x = sphere.position.x
+				camera.position.y = sphere.position.y
+				camera.position.z = 40
+				//searchCountry(sphere.position.x,sphere.position.y,sphere);
+				
+
+			})
+			domEvents.addEventListener(sphere2,'click',event =>{
+				sphere2.add(makeTextLabel("sphere2"));
+				camera.position.x = sphere2.position.x
+				camera.position.y = sphere2.position.y
+				camera.position.z = 40
+				camera.lookAt(sphere2.position.x,sphere2.position.y,100)
+				//searchCountry(sphere2.position.x,sphere2.position.y,sphere2);
+
+			})
+			domEvents.addEventListener(sphere3,'click',event =>{
+				sphere3.add(makeTextLabel("sphere3"));
+				camera.position.x = sphere3.position.x
+				camera.position.y = sphere3.position.y
+				camera.position.z = 40
+				//searchCountry(sphere3.position.x,sphere3.position.y,sphere3);
+
+			})
+			domEvents.addEventListener(solarPlane,'click',event =>{
+				solarPlane.add(makeTextLabel("solar plane"));
+				
+				//camera.position.x = solarPlane.position.x
+				//camera.position.y = solarPlane.position.y
+				//camera.position.z = 40
+				//searchCountry(solarPlane.position.x,solarPlane.position.y,solarPlane);
+				
+			})
+					
+
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
+			controls.minDistance = 1;
+			controls.maxDistance = 1000;
+			
+			function searchCountry(lat,lng,object){
+
+			var phi = (90 - lat) * Math.PI / 180;
+			var theta = (180 - lng) * Math.PI / 180;
+
+			camera.position.x = 200 * Math.sin(phi) * Math.cos(theta);
+			camera.position.y = 200 * Math.cos(phi);
+			camera.position.z = 200 * Math.sin(phi) * Math.sin(theta);
+			camera.lookAt(object.position); // <<-- Change this one to the format above!
+			}
+			
+			
+			var animate = function (time) {
+				requestAnimationFrame( animate );
+				/**
+				sphere.rotation.x += 0.01;
+				sphere.rotation.y += 0.01;
+				
+				sphere2.rotation.x += 0.01;
+				sphere2.rotation.y += 0.01;
+				
+				sphere3.rotation.x += 0.01;
+				sphere3.rotation.y += 0.01;*/
+				angle = (angle + .05) % (2 * Math.PI);
+				rotateBody(sphere2, angle, 10);
+				rotateBody(sphere3, angle, 15);
+				//camera.copy(fakeCamera);
+				controls.update();
+				
+				renderer.render( scene, camera );
+				labelRenderer.render(scene, camera);
+				
+				function rotateBody(body, angle, radius) {
+				body.rotation.x = angle;
+				//body.position.x = radius * Math.cos(angle);
+				body.position.y = radius * Math.sin(angle);
+				body.position.z = radius * Math.sin(angle);
+				}
+			};
+			
+			
+			
+			
+			function createSolarPlane() {
+			var solarPlane = new THREE.GridHelper(150, 200);
+			solarPlane.position.y = -20
+			
+			return solarPlane;
+			}
+			function makeTextLabel(label) {
+			var text = document.createElement('div');
+			text.style.color = 'rgb(255, 255, 255)';
+			text.textContent = label;
+			return new THREE.CSS2DObject(text);
+			}
+			animate();
+		</script>
+		
+		
+	</body>
+</html>
